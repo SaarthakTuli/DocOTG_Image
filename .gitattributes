@@ -1,0 +1,2 @@
+*.h5 filter=lfs diff=lfs merge=lfs -text
+Final_model_vgg19.h5 filter=lfs diff=lfs merge=lfs -text
