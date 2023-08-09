@@ -12,7 +12,6 @@ app = Flask(__name__)
 # def hello_world():
 #     return 'Hello World'
 
-
 @app.route('/image', methods=["POST"])
 def image():
     # Loading Model
