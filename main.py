@@ -1,22 +1,37 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
 import tensorflow as tf
 import numpy as np
 from PIL import Image
 import base64
 import io
 
+
+class ModelLoader:
+    _instance = None
+
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super(ModelLoader, cls).__new__(cls)
+            cls._instance.model = tf.keras.models.load_model(
+                "Final_model_vgg19.h5")
+        return cls._instance
+
+    def get_model(self):
+        return self.model
+
+
 app = Flask(__name__)
+model_loader = ModelLoader()
 
 
-# @app.route('/')
-# def hello_world():
-#     return 'Hello World'
+@app.route('/')
+def hello_world():
+    return 'Hello World'
+
 
 @app.route('/image', methods=["POST"])
 def image():
-    # Loading Model
-    model = tf.keras.models.load_model(
-        "Final_model_vgg19.h5")
+    model = model_loader.get_model()
 
     # Retrieve the Base64-encoded image from the JSON payload
     data = request.get_json()
@@ -42,18 +57,12 @@ def image():
     # Make the prediction
     predictions = model.predict(input_data)
     predicted_class = np.argmax(predictions[0])
-    return f"Predicted Class: {predicted_class}"
 
+    data = {
+        "result": predicted_class
+    }
 
-# @app.route('/knn')
-# def knn():
-#     return "<h1>KNN</h1>"
-
-
-# @app.route('/svm')
-# def svm():
-#     return "<h1>SVM</h1>"
-
+    return f"{predicted_class}"
 
 # main driver function
 if __name__ == '__main__':
